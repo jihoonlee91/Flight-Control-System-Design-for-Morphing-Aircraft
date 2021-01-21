@@ -13,3 +13,6 @@ main.pdf
 *.md5
 *.dpth
 *.auxlock
+*.bcf
+*.run.xml
+*.toc
