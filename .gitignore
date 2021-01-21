@@ -1,0 +1,15 @@
+.DS_Store
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.xdv
+._*
+main.pdf
+*.md5
+*.dpth
+*.auxlock
