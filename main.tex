@@ -1,0 +1,142 @@
+\documentclass[a4paper, 12pt]{report}
+
+%%%%%%%%%%%%
+% Packages %
+%%%%%%%%%%%%
+
+\usepackage[english]{babel}
+\usepackage[noheader]{packages/sleek}
+\usepackage{packages/sleek-title}
+\usepackage{packages/sleek-theorems}
+\usepackage{packages/sleek-listings}
+\usepackage{kotex}
+\usepackage{lipsum}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+%%%%%%%%%%%%%%
+% Title-page %
+%%%%%%%%%%%%%%
+
+\logo{./resources/pdf/logo.pdf}
+\institute{Seoul National University}
+\faculty{Department of Aerospace Engineering}
+\department{Flight Dynamics and Control Laboratory}
+\title{Flight Control System Design for Morphing Aircraft}
+%\subtitle{With a sleeker title-page}
+\author{\textit{Author}\\Jihoon \textsc{Lee}\\Seungyun \textsc{Jung}\\Seong-hun \textsc{Kim}\\Hanna \textsc{Lee}}
+\supervisor{Yondan Kim}
+%\context{Development of an SMPC Flap Module for Morphing Wings}
+\date{December 31, 2020}
+
+%%%%%%%%%%%%%%%%
+% Bibliography %
+%%%%%%%%%%%%%%%%
+
+\addbibresource{./resources/bib/references.bib}
+
+%%%%%%%%%%
+% Others %
+%%%%%%%%%%
+
+\lstdefinestyle{latex}{
+    language=TeX,
+    style=default,
+    %%%%%
+    commentstyle=\ForestGreen,
+    keywordstyle=\TrueBlue,
+    stringstyle=\VeronicaPurple,
+    emphstyle=\TrueBlue,
+    %%%%%
+    emph={LaTeX, usepackage, textit, textbf, textsc}
+}
+
+\FrameTBStyle{latex}
+
+\def\tbs{\textbackslash}
+
+%%%%%%%%%%%%
+% Document %
+%%%%%%%%%%%%
+
+\begin{document}
+    \maketitle
+    \romantableofcontents
+
+    \chapter{Introduction}
+
+    This documentation is primarily aimed at practicing engineers who want to design a flight control system for morphing aircraft. 
+
+	\chapter{Modeling}
+
+	A mathematical model is used to evaluate the performance of the flight control system and hence improve the design.
+	
+	\section{Force and Moment}
+	
+	The aerodynamic forces and moments on a morphing aircraft are produced by the relative motion with respect to the air and depend on the shape of the aircraft as well as the orientation of the aircraft with respect to the airflow. 
+	We have the following coefficients in terms of wind-axes components:
+	\begin{align}
+		D &= \bar{q}SC_D \\
+		C &= \bar{q}SC_C \\
+		L &= \bar{q}SC_L \\
+		l_w &= \bar{q}SbC_l \\
+		m_w &= \bar{q}SbC_m \\
+		n_w &= \bar{q}SbC_n
+	\end{align}
+	The aerodynamic coefficients in different shapes can be obtained by analytical methods, computational fluid dynamics, wind tunnel testing, or flight test.
+	
+	\section{Nonlinear Model}
+	
+	The body-axis 6-degree-of-freedom equations of motion for a morphing aircraft can be described as follows \cite{stevens2015aircraft}:
+	\begin{align}
+		\dot{U} &= RV-QW-g_D\sin\theta+(X_A+X_T)/\text{m} \\
+		\dot{V} &= -RU+PW-g_D\sin\phi+(Y_A+Y_T)/\text{m} \\
+		...
+	\end{align}
+	
+	\section{Linear Model}
+	
+	The longitudinal and lateral-directional equations can be treated separately. The longitudinal states and controls are
+	\begin{align}
+		content...
+	\end{align}
+	The longitudinal coefficient matrices are given by
+	\begin{align}
+		content...
+	\end{align}
+	The lateral-directional states and controls are
+	\begin{align}
+		content...
+	\end{align}
+	The lateral-directional coefficient matrices are given by
+	\begin{align}
+		content...
+	\end{align}
+
+	\chapter{Control Design}
+	
+	\lipsum[8]
+	
+	\section{Linear Quadratic Regulator}
+	
+	\lipsum[9]
+	
+	\section{Nonlinear Dynamic Inversion}
+	
+	Since aircraft are inherently nonlinear systems, applying these linear design tools means that one must design several linear controllers and then gain-schedule them over the operating regime of the aircraft.
+	Gain-scheduling can be a particularly tedious and laborious task for a morphing aircraft since various shapes should also be considered.
+	The dynamic inversion controller can be an alternative because it takes into account the nonlinearities of the aircraft and thus does not require gain scheduling.
+	
+	\printbibliography
+	
+%	\begin{thebibliography}{9}
+%	\bibitem{stevens2015}
+%	Stevens, B. L., Lewis, F. L., and Johnson, E. N., 
+%	\textit{Aircraft Control and Simulation: Dynamics, Controls Design, and Autonomous Systems}, 
+%	3rd Edition, 
+%	John Wiley \& Sons, Inc., 
+%	Hoboken, New Jersey, 
+%	2015.
+%	\end{thebibliography}
+
+\end{document}
