@@ -69,30 +69,40 @@
 
 	\chapter{Modeling}
 
-	A mathematical model is used to evaluate the performance of the flight control system and hence improve the design.
+	모핑 항공기를 위한 비행제어시스템을 개발하기 위해서는 수학적 모델링이 선행되어야 한다. 
+	기본적으로 수학적 모델은 물리법칙에 의거하여 만들어지고 실험 데이터를 이용하여 개선된다. 
+	수학적 모델은 분명한 한계를 가지고있으며, 제어시스템 개발 과정에서 이러한 한계점을을 적절히 고려하는 것이 중요하다.
+	개발된 모델은 제어시스템 설계에 사용될 뿐만 아니라 초기 설계 단계에 있는 항공기의 성능을 평가하고 더 나아가 항공기 설계를 개선하는데도 사용된다.
+	본 장에서는 일반 항공기와 다른 모핑 항공기의 수학적 모델을 도출하는 과정을 다룬다.
+	먼저 실험 데이터를 이용하여 모핑 항공기에 작용하는 힘과 모멘트를 모델링하고, 이를 사용하여 비선형 모델을 유도한 이후, 선형화 과정을 거쳐 선형 모델을 도출한다.
 	
 	\section{Force and Moment}
 	
-	The aerodynamic forces and moments on a morphing aircraft are produced by the relative motion with respect to the air and depend on the shape of the aircraft as well as the orientation of the aircraft with respect to the airflow. 
-	We have the following coefficients in terms of wind-axes components:
+	모핑 항공기에 작용하는 공기역학적 힘과 모멘트는 모핑 항공기의 자세 및 형상에 영향을 받는다.
+	공력은 동체와 동체 주변 공기 흐름의 상대운동에 의해 발생하므로 동체 좌표계보다는 바람 좌표계에서 다음과 같이 표현하는 것이 일반적이다.
 	\begin{align}
 		D &= \bar{q}SC_D \\
 		C &= \bar{q}SC_C \\
 		L &= \bar{q}SC_L \\
 		l_w &= \bar{q}SbC_l \\
-		m_w &= \bar{q}SbC_m \\
+		m_w &= \bar{q}S\bar{c}C_m \\
 		n_w &= \bar{q}SbC_n
 	\end{align}
-	The aerodynamic coefficients in different shapes can be obtained by analytical methods, computational fluid dynamics, wind tunnel testing, or flight test.
+	여기서 $D$, $C$, $L$은 각각 항력, 측력, 양력을, $l$, $m$, $n$은 롤축, 피치축, 요축 모멘트를, $q$는 동압을, $S$, $b$, $\bar{c}$는 각각 주익의 면적, 스팬 길이, 코드 길이를 나타낸다.
+	위 식의 무차원 공기역학 계수들은 일반적으로 해석적 기법, 전산유체역학, 풍동시험, 비행시험 등을 통해 얻어지는데, 완전한 모델링을 위해서는 이러한 기법들을 다양한 비행조건(고도, 마하수 등)과 받음각 및 옆미끄럼각을 가지는 경우에 대해 폭넓게 적용해야 한다.
+	이때 모핑 항공기의 경우 형상 변화에 따른 공력계수의 변화도 반영이 되어야하므로 일반 항공기의 경우보다 시험에 소요되는 시간과 비용이 증가하게 된다.
+	본 문서에서는 적절한 공력계수 모델이 이미 주어졌다고 가정하고 수학적 모델을 도출한다.
 	
 	\section{Nonlinear Model}
 	
-	The body-axis 6-degree-of-freedom equations of motion for a morphing aircraft can be described as follows \cite{stevens2015aircraft}:
+	모핑 항공기의 6자유도 동역학 모델은 동체 좌표계에서 다음과 같이 나타낼 수 있다 \cite{stevens2015aircraft}.
 	\begin{align}
 		\dot{U} &= RV-QW-g_D\sin\theta+(X_A+X_T)/\text{m} \\
 		\dot{V} &= -RU+PW-g_D\sin\phi+(Y_A+Y_T)/\text{m} \\
-		...
+		\dot{W} &= QU-PV+g_D\cos\phi\cos\theta+(Z_A+Z_T)/\text{m} \\
+		\dot{\phi} &= P+\tan\theta(Q\sin\phi+R\cos\phi)
 	\end{align}
+	여기서 
 	
 	\section{Linear Model}
 	
