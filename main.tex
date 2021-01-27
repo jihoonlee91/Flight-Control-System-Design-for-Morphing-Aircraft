@@ -65,7 +65,7 @@
 
     \chapter{Introduction}
 
-    This documentation is primarily aimed at practicing engineers who want to design a flight control system for morphing aircraft. 
+    This documentation is primarily aimed at practicing engineers who want to design a flight control system for morphing aircraft.
 
 	\chapter{Modeling}
 
@@ -73,7 +73,7 @@
 	
 	\section{Force and Moment}
 	
-	The aerodynamic forces and moments on a morphing aircraft are produced by the relative motion with respect to the air and depend on the shape of the aircraft as well as the orientation of the aircraft with respect to the airflow. 
+	The aerodynamic forces and moments on a morphing aircraft are produced by the relative motion with respect to the air and depend on the shape of the aircraft as well as the orientation of the aircraft with respect to the airflow.
 	We have the following coefficients in terms of wind-axes components:
 	\begin{align}
 		D &= \bar{q}SC_D \\
@@ -122,20 +122,82 @@
 	\lipsum[9]
 	
 	\section{Nonlinear Dynamic Inversion}
-	
-	Since aircraft are inherently nonlinear systems, applying these linear design tools means that one must design several linear controllers and then gain-schedule them over the operating regime of the aircraft.
-	Gain-scheduling can be a particularly tedious and laborious task for a morphing aircraft since various shapes should also be considered.
-	The dynamic inversion controller can be an alternative because it takes into account the nonlinearities of the aircraft and thus does not require gain scheduling.
+	비행제어기 설계시 고려되는 대표적인 비선형 제어방법으로는 비선형 동적 모델역변환 제어 (nonlinear dynamic inversion, NDI)기법이 있다. 비선형 동적 모델역변환 제어 기법은 적절한 비선형좌표변환을 이용하여 주어진 비행동역학을 새로운 좌표계에서 표현한 후 제어입력을 설계하는 제어 방식으로, 설계되는 제어 입력은 비선형 비행동역학을 상쇄하는 항과 시스템을 안정화 시키는 새로운 제어항으로 구성된다. 비선형 동적 모델역변환 제어를 이용할 경우 상태공간 전체에서 유효한 성능을 보이는 비행 제어기를 설계할 수 있다는 점이 장점이다. 그러나 비선형 동적 모델역변환 제어기법이 잘 동작하기 위해서는 높은 정확도의 비행동역학 모델 정보가 요구되며 비행동역학 모델의 정확도가 낮으면 비선형 동적 모델역변환 제어기법의 성능이 저하되고 경우에 따라서는 제어기의 안전성마저도 보장되지 않을 수 있다는 것이 비선형 동적 모델역변환 제어기법의 잘 알려진 단점이다. \par
+일반적으로 비선형 동적 모델역변환 기법을 적용하기 위한 다음과 같은 비선형 시불변 입력-아핀 (input-affine) 시스템을 고려하자.
+\begin{equation}\label{Eq:NDI_sys}
+  \begin{split}
+    \dot{\mathbf{x}} &= f(\mathbf{x}) + G(\mathbf{x})\mathbf{u} \\
+    \mathbf{y} &= h(\mathbf{x})
+  \end{split}
+\end{equation}
+\begin{equation}\label{Eq:InputMTRX}
+  G(\mathbf{x}) =
+  \begin{bmatrix}
+    g_{1}(\mathbf{x}), & \dots & ,g_{m}(\mathbf{x})
+  \end{bmatrix}
+\end{equation}
+\begin{equation}\label{Eq:outputMTRX}
+  h(\mathbf{x}) =
+  \begin{bmatrix}
+    h_{1}(\mathbf{x}), & \dots & ,h_{m}(\mathbf{x})
+  \end{bmatrix}^{T}
+\end{equation}
+단, $\mathbf{x} \in \mathbb{R}^{n\times1}$, $\mathbf{u} \in \mathbb{R}^{m\times1}$, $f(\cdot) \in \mathbb{R}^{n\times1}$, $h(\cdot) \in \mathbb{R}^{m\times1}$, $g_{i}(\cdot) \in \mathbb{R}^{n\times1}$, 그리고 $h_{i}(\cdot) \in \mathbb{R}\,\,(i=1,\cdot\cdot\cdot,m)$. 여기서 $\mathbf{y}$는 제어하고자 하는 성능 출력 (performance output)이다. 다음과 같은 연산을 고려하자.
+\begin{equation}\label{Eq:output_dere}
+  \begin{split}
+    \dot{y}_{i} &= L_{f}h_{i} + \sum_{j=1}^{m}( L_{g_{j}}h_{i} )u_{j} = L_{f}h_{i} \\
+    \ddot{y}_{i} &= L_{f}^{2}h_{i} + \sum_{j=1}^{m}L_{g_{j}}( L_{f}h_{i} )u_{j} = L_{f}^{2}h_{i} \\
+     \vdots  \\
+    y_{i}^{(\lambda_{i})} &= L_{f}^{\lambda_{i}}h_{i} + \sum_{j=1}^{m}L_{g_{j}}( L_{f}^{\lambda_{i}-1}h_{i} )u_{j}
+  \end{split}
+\end{equation}
+단, 상대차수 $\lambda_{i}$는 각각의 $h_{i}$에 대해서 최소 하나의 $j \in \{1,2,\cdot\cdot\cdot,m\}$에 대해 다음 수식을 만족하는 최소 정수로 정의된다.
+\begin{equation}\label{Eq:rela_deg_cond}
+  L_{g_{j}}( L_{f}^{\lambda_{i}-1}h_{i} ) \neq 0
+\end{equation}
+또한, $\boldsymbol{\lambda}=(\lambda_{1},\lambda_{2},\cdot\cdot\cdot,\lambda_{m})$은 벡터 상대차수로 정의된다. 이제, 각각의 성능 출력을 시간에 대해 $\lambda_{i}$번 미분하고 얻어진 출력 동역학은 다음과 같이 쓰여질 수 있다.
+\begin{equation}\label{Eq:output_dyn}
+  \begin{split}
+     \begin{bmatrix}
+       y_{1}^{(\lambda_{1})} \\
+       y_{2}^{(\lambda_{2})} \\
+       \vdots \\
+       y_{m}^{(\lambda_{m})}
+     \end{bmatrix}
+       &=
+     \begin{bmatrix}
+       L_{f}^{\lambda_{1}}h_{i} \\
+       L_{f}^{\lambda_{2}}h_{i} \\
+       \vdots \\
+       L_{f}^{\lambda_{m}}h_{i}
+     \end{bmatrix}
+     +
+     \begin{bmatrix}
+       L_{g_{1}}( L_{f}^{\lambda_{1}-1}h_{1} ) & \dots & L_{g_{m}}( L_{f}^{\lambda_{1}-1}h_{1} ) \\
+       \vdots & \ddots & \vdots \\
+       L_{g_{1}}( L_{f}^{\lambda_{m}-1}h_{m} ) & \dots & L_{g_{m}}( L_{f}^{\lambda_{m}-1}h_{m} )
+     \end{bmatrix}
+     \mathbf{u} \\
+     &\triangleq f^{*}(\mathbf{x}) + G^{*}(\mathbf{x})\mathbf{u}
+  \end{split}
+\end{equation}
+행렬 $G^{*}(\mathbf{x})$가 nonsingular하다면 다음과 같은 제어입력을 설계할 수 있다.
+\begin{equation}\label{Eq:NDI_input1}
+  \mathbf{u} = G^{*}(\mathbf{x})^{-1}\{ -f^{*}(\mathbf{x}) + \boldsymbol{\nu} \}
+\end{equation}
+여기서 $-f^{*}(\mathbf{x})$이 비선형 비행동역학을 상쇄하는 항을 나타내며 $\boldsymbol{\nu}$이 시스템을 안정화 하는 새로운 제어항을 나타낸다. 새로운 제어항 $\boldsymbol{\nu}$는 설계자에 따라 다양한 방식으로 설계되어 질 수 있다. \par
+한편, 앞서 기술한 바와 같이 비선형 동적 모델역변환 제어기법은 일반적으로 비선형 시불변 시스템에 적용되어지는 제어방법론이다. 그렇기 때문에 특정 형상의 항공기에 대해 설계된 비선형 동적 모델역변환 제어기는 대규모로 형상이 변화한 항공기에 대해서는 안정성과 성능을 전혀 보장 할 수 없다. 그리고 모핑 항공기와 같은 비선형 시변 시스템에 비선형 동적 모델역변환 제어기법을 적용하기에는 제어기 설계의 복잡도가 매우 높아지는 어려움이 발생한다. 이러한 어려움은 성능 출력을 반복적으로 미분하는 과정 즉, 식 \eqref{Eq:output_dere}을 계산하는 과정에서 다양한 시변 항들이 추가적으로 고려되어져야 한다는 사실로 부터 기인한다. 이 같은 어려움을 완화하기 위해서는 형상 변화에 따라 변하는 물리량들 중에서 변화량이 큰 물리량과 변화량이 작은 물리량을 구분하고 변화가 작은 물리량들은 적절한 상수 값으로 근사하여 시변항들을 최소화하고 이를 통해 설계 복잡도를 낮추는 것이 중요하다. 그러나 시변항들을 적절한 상수 값으로 근사화하더라도 상태공간 전체에서 만족스러운 제어 성능을 보장하는 비선형 동적 모델역변환 제어기를 설계하는 것은 여전히 복잡한 문제일 수 있다. 이를 해결하기위해서는 다양한 형태의 근사화된 비선형 동적 모델역변환 제어기법이 고려될 수 있을 것이다.
+
 	
 	\printbibliography
 	
 %	\begin{thebibliography}{9}
 %	\bibitem{stevens2015}
-%	Stevens, B. L., Lewis, F. L., and Johnson, E. N., 
-%	\textit{Aircraft Control and Simulation: Dynamics, Controls Design, and Autonomous Systems}, 
-%	3rd Edition, 
-%	John Wiley \& Sons, Inc., 
-%	Hoboken, New Jersey, 
+%	Stevens, B. L., Lewis, F. L., and Johnson, E. N.,
+%	\textit{Aircraft Control and Simulation: Dynamics, Controls Design, and Autonomous Systems},
+%	3rd Edition,
+%	John Wiley \& Sons, Inc.,
+%	Hoboken, New Jersey,
 %	2015.
 %	\end{thebibliography}
 
