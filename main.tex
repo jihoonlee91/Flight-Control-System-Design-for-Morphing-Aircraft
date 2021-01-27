@@ -81,12 +81,12 @@
 	모핑 항공기에 작용하는 공기역학적 힘과 모멘트는 모핑 항공기의 자세 및 형상에 영향을 받는다.
 	공력은 동체와 동체 주변 공기 흐름의 상대운동에 의해 발생하므로 동체 좌표계보다는 바람 좌표계에서 다음과 같이 표현하는 것이 일반적이다.
 	\begin{align}
-		D &= \bar{q}SC_D \\
-		C &= \bar{q}SC_C \\
-		L &= \bar{q}SC_L \\
-		l_w &= \bar{q}SbC_l \\
-		m_w &= \bar{q}S\bar{c}C_m \\
-		n_w &= \bar{q}SbC_n
+		D =& \bar{q}SC_D \\
+		C =& \bar{q}SC_C \\
+		L =& \bar{q}SC_L \\
+		l_w =& \bar{q}SbC_l \\
+		m_w =& \bar{q}S\bar{c}C_m \\
+		n_w =& \bar{q}SbC_n
 	\end{align}
 	여기서 $D$, $C$, $L$은 각각 항력, 측력, 양력을, $l$, $m$, $n$은 롤축, 피치축, 요축 모멘트를, $q$는 동압을, $S$, $b$, $\bar{c}$는 각각 주익의 면적, 스팬 길이, 코드 길이를 나타낸다.
 	위 식의 무차원 공기역학 계수들은 일반적으로 해석적 기법, 전산유체역학, 풍동시험, 비행시험 등을 통해 얻어지는데, 완전한 모델링을 위해서는 이러한 기법들을 다양한 비행조건(고도, 마하수 등)과 받음각 및 옆미끄럼각을 가지는 경우에 대해 폭넓게 적용해야 한다.
@@ -95,34 +95,59 @@
 	
 	\section{Nonlinear Model}
 	
-	모핑 항공기의 6자유도 동역학 모델은 동체 좌표계에서 다음과 같이 나타낼 수 있다 \cite{stevens2015aircraft}.
+	모핑 항공기의 동체 좌표계에서의 상태변수 벡터는 다음과 같이 나타낼 수 있다.
+	\begin{equation}
+		X = [U \quad V \quad W \quad \phi \quad \theta \quad \psi \quad P \quad Q \quad R \quad p_N \quad p_E \quad p_D]
+	\end{equation}
+	6자유도 운동방정식은 동체 좌표계에서 다음과 같이 나타낼 수 있다 \cite{stevens2015aircraft}.
 	\begin{align}
-		\dot{U} &= RV-QW-g_D\sin\theta+(X_A+X_T)/\text{m} \\
-		\dot{V} &= -RU+PW-g_D\sin\phi+(Y_A+Y_T)/\text{m} \\
-		\dot{W} &= QU-PV+g_D\cos\phi\cos\theta+(Z_A+Z_T)/\text{m} \\
-		\dot{\phi} &= P+\tan\theta(Q\sin\phi+R\cos\phi)
+		\dot{U} =& RV-QW-g_D\sin\theta+(X_A+X_T)/\text{m} \\
+		\dot{V} =& -RU+PW-g_D\sin\phi+(Y_A+Y_T)/\text{m} \\
+		\dot{W} =& QU-PV+g_D\cos\phi\cos\theta+(Z_A+Z_T)/\text{m} \\
+		\dot{\phi} =& P+\tan\theta(Q\sin\phi+R\cos\phi) \\
+		\dot{\theta} =& Q\cos\phi-R\sin\phi \\
+		\dot{\psi} =& (Q\sin\phi+R\cos\phi)/\cos\theta \\
+		\Gamma\dot{P} =& J_{xz}[J_x-J_y+J_z]PQ-[J_z(J_z-J_y)+J_{xz}^2]QR+J_zl+J_{xz}n \\
+		J_y\dot{Q} =& (J_z-J_x)PR-J_{xz}(P^2-R^2)+m \\
+		\Gamma\dot{R} =& [(J_x-J_y)J_X+J_{xz}^2]PQ-J_{xz}[J_x-J_y+J_z]QR+J_{xz}l+J_xn \\ 
+		& \cdot \Gamma = J_xJ_z-J_{xz}^2 \nonumber \\ 
+		\dot{p}_N =& Uc\theta c\psi+V(-c\phi s\psi+s\phi s\theta c\psi)+W(s\phi s\psi+c\phi s\theta c\psi) \\
+		\dot{p}_E =& Uc\theta s\psi+V(c\phi c\psi+s\phi s\theta s\psi)+W(-s\phi c\psi+c\phi s\theta s\psi) \\
+		\dot{p}_D =& -Us\theta+Vs\phi c\theta+Wc\phi c\theta
 	\end{align}
-	여기서 
+	여기서 $U$, $V$, $W$는 속도의 동체 좌표계 성분, $\phi$, $\theta$, $\psi$는 자세의 3-2-1 오일러 각, $P$, $Q$, $R$은 각속도의 동체 좌표계 성분, $p_N$, $p_E$, $p_D$는 위치의 NED 좌표계 성분, $X_A$, $Y_A$, $Z_A$는 공력의 동체 좌표계 성분, $X_T$, $Y_T$, $Z_T$는 추력의 동체 좌표계 성분, $\text{m}$은 질량, $g_D$는 중력가속도의 local down 방향 성분, $J_x$, $J_y$, $J_z$, $J_{xz}$는 동체 좌표계에 대해 정의된 inertia matrix의 성분이다. 이때, 비대칭 모핑으로 인해 좌우 대칭이 깨질 경우 $J_xy$ 성분의 크기가 무시할 수 없을 정도로 커질 수 있다.
 	
 	\section{Linear Model}
 	
-	The longitudinal and lateral-directional equations can be treated separately. The longitudinal states and controls are
+	정상 수평비행 상태에 대해 수치적 선형화를 수행하면 종방향과 횡방향 운동을 분리해서 다룰 수 있다.
+	종방향 상태변수 벡터와 제어입력 벡터는 다음과 같이 정의된다.
 	\begin{align}
-		content...
+		x =& \begin{bmatrix}
+			\alpha && q && v_T && \theta
+		\end{bmatrix} \\
+		u =& \begin{bmatrix}
+			\delta_e && \delta_t
+		\end{bmatrix}
 	\end{align}
-	The longitudinal coefficient matrices are given by
+	종방향 운동은 다음과 같은 선형 방정식으로 나타낼 수 있다.
+	\begin{equation}
+		x=Ax+Bu
+	\end{equation}
+	이때 종방향 계수 행렬들은 수치적으로 얻어진다.
+	횡방향 상태변수 벡터와 제어입력 벡터는 다음과 같이 정의된다.
 	\begin{align}
-		content...
+		x =& \begin{bmatrix}
+			\beta && \phi && p_s && r_s
+		\end{bmatrix} \\
+		u =& \begin{bmatrix}
+			\delta_a && \delta_r
+		\end{bmatrix}
 	\end{align}
-	The lateral-directional states and controls are
-	\begin{align}
-		content...
-	\end{align}
-	The lateral-directional coefficient matrices are given by
-	\begin{align}
-		content...
-	\end{align}
-
+	횡방향 운동은 다음과 같은 선형 방정식으로 나타낼 수 있다.
+	\begin{equation}
+		x=Ax+Bu
+	\end{equation}
+	이때 횡방향 계수 행렬들은 수치적으로 얻어진다.	
 	\chapter{Control Design}
 	
 	\lipsum[8]
