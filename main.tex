@@ -60,12 +60,23 @@
 %%%%%%%%%%%%
 
 \begin{document}
-    \maketitle
-    \romantableofcontents
+	\maketitle
+	\romantableofcontents
 
-    \chapter{Introduction}
+	\chapter{Introduction}
+	항공기에 대해 제어시스템을 설계할 때에는 사전에 정의된 평형점 근방에서 시불변 동역학 모델을 공력해석이나 풍동 실험을 통해 구축하고, 이에 기반하여 비행 임무에 맞게 요구되는 gain margin이나 phase margin 등을 만족하도록 제어기를 설계한다.
+	그러나 모핑 항공기는 형상이 다양하기 때문에 모든 형상에 대해 공력 모델을 얻고 각 평형점에 대해 제어기를 설계하는 것이 사실상 불가능하며, 특히 모핑 도중에는 시불변 시스템으로도 가정하기 어렵다~\cite{seigler_analysis_2009,chakravarthy_time-varying_2012}.
+	지난 수년간 이러한 문제를 가진 모핑 항공기 제어시스템 설계를 위해  선형시변시스템에 기반하여 제어기를 설계하거나~\cite{jiang_systematic_2015,lee_linear_2019}, 파라미터화 된 모핑 변수를 동역학 모델에 포함시키거나 외란으로 간주하여 비선형 제어기를 설계하는 방식~\cite{wu_modified_2017,lee_neural_2019,jung_disturbance_2020} 들이 제안되었다.
 
-    This documentation is primarily aimed at practicing engineers who want to design a flight control system for morphing aircraft.
+	본 보고서에서는 모핑 항공기를 위한 선형 및 비선형 비행제어 시스템 설계 방법에 대해 기술한다.
+	제어 시스템의 설계는 지난 수십년간 높은 안정성과 제어 성능을 보여준 수학적 모델 기반 설계 기법을 도입한다.
+	이를 위해선 실제 모핑 항공기의 동적 거동을 최대한 정확히 모사하는 동역학 모델이 필요하다.
+	스팬이나 스윕 모핑에 따라 변화하는 공력 중심과 관성 모멘트, 공력을 고려한 선형, 비선형 모핑 항공기 모델을 도출한다.
+	이후 각 절에서는 도출된 선형 및 비선형 모델에 기반하여 선형 최적제어기와 비선형 동적모델 역변환 제어기를 설계한다.
+	선형 최적제어기는 직관적인 성능 지표를 통해 모핑 상황에서 항공기가 우선적으로 제어해 주어야 할 상태변수를 선정할 수 있으며, 제어기 자체가 매우 강건하기 때문에 정확한 모델링이 힘든 모핑 항공기 제어 시스템으로 적절하다.
+	비선형 동적 모델 역변환 제어기는 선형 최적제어기에 비해 모델 정확도에 대한 의존도가 높지만, 비선형 모델을 직접적으로 사용함으로써 모핑 항공기의 넓은 비행영역 전반에 걸쳐 유효한 성능을 가지도록 할 수 있다.
+
+
 
 	\chapter{Modeling}
 
