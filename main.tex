@@ -355,6 +355,27 @@
 \subsection{Issues in Application to Morphing Aircraft}
 앞서 기술한 바와 같이 비선형 동적 모델역변환 제어기법은 일반적으로 비선형 시불변 시스템에 적용되어지는 제어방법론이다. 그렇기 때문에 특정 형상의 항공기에 대해 설계된 비선형 동적 모델역변환 제어기는 대규모로 형상이 변화한 항공기에 대해서는 안정성과 성능을 전혀 보장 할 수 없다. 그리고 모핑 항공기와 같은 비선형 시변 시스템에 비선형 동적 모델역변환 제어기법을 적용하기에는 제어기 설계의 복잡도가 매우 높아지는 어려움이 발생한다. 이러한 어려움은 성능 출력을 반복적으로 미분하는 과정 즉, Eq.~ \eqref{Eq:output_dere}을 계산하는 과정에서 다양한 시변 항들이 추가적으로 고려되어져야 한다는 사실로 부터 기인한다. 이 같은 어려움을 완화하기 위해서는 형상 변화에 따라 변하는 물리량들 중에서 변화량이 큰 물리량과 변화량이 작은 물리량을 구분하고 변화가 작은 물리량들은 적절한 상수 값으로 근사하여 시변항들을 최소화하고 이를 통해 설계 복잡도를 낮추는 것이 중요하다. 그러나 시변항들을 적절한 상수 값으로 근사화하더라도 상태공간 전체에서 만족스러운 제어 성능을 보장하는 비선형 동적 모델역변환 제어기를 설계하는 것은 여전히 복잡한 문제일 수 있다. 이를 해결하기위해서는 다양한 형태의 근사화된 비선형 동적 모델역변환 제어기법이 고려될 수 있을 것이다.
 
+
+\appendix
+
+\chapter{MATLAB Code - LQR}
+
+The LQR can be designed by executing the \textit{MATLAB} function \texttt{LQR} of the \textit{Control System Toolbox}.
+Given the continuous-time system matrices $A$ and $B$, the weighting matrices $Q$ and $R$, and the state feedback $x$, the optimal control input $u$ can be obtained as follows.
+\FrameTBStyle{matlab}
+\begin{lstlisting}[style=matlabFrameTB, gobble=4]
+	[K,~,~]=LQR(A,B,Q,R,~);
+	u=-K*x;
+\end{lstlisting}
+
+\chapter{MATLAB Code - NDI}
+\FrameTBStyle{matlab}
+\begin{lstlisting}[style=matlabFrameTB, gobble=4]
+	% We derive the reference flight angle derivatives $\dot{\phi}$, $\dot{\theta}$, and $\dot{\beta}$. This is done using a PID controller, like
+	phi_dot_ref=
+	K_P_1_phi*(phi_ref-phi)+K_I_1_phi*(phi_ref-phi)+K_D_1_phi*(phi_ref-phi);
+\end{lstlisting}
+
 	\printbibliography
 	
 %	\begin{thebibliography}{9}
