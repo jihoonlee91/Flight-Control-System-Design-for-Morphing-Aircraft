@@ -369,12 +369,36 @@ Given the continuous-time system matrices $A$ and $B$, the weighting matrices $Q
 \end{lstlisting}
 
 \chapter{MATLAB Code - NDI}
-\FrameTBStyle{matlab}
-\begin{lstlisting}[style=matlabFrameTB, gobble=4]
-	% We derive the reference flight angle derivatives $\dot{\phi}$, $\dot{\theta}$, and $\dot{\beta}$. This is done using a PID controller, like
-	phi_dot_ref=
-	K_P_1_phi*(phi_ref-phi)+K_I_1_phi*(phi_ref-phi)+K_D_1_phi*(phi_ref-phi);
-\end{lstlisting}
+\begin{verbatim}
+	phi_dot_ref = K_P_1*err_phi+K_I_1*err_i_phi+K_D_1*err_d_phi;
+	
+	ax = X/m - g*sin(theta);
+	ay = Y/m + g*sin(phi)*cos(theta);
+	az = Z/m + g*cos(phi)*cos(theta);
+	
+	mid = [1 sin(phi)*tan(theta) cos(phi)*tan(theta);
+	       0 cos(phi) -sin(phi);
+	       w/(sqrt(u^2 + w^2)) 0 -u/(sqrt(u^2 + w^2))];
+	       
+	pqr_ref 
+	= inv(mid)*( phi_dot_ref - 
+	[0;0;(1/(sqrt(u^2 + w^2)))*((-u*v/(V^2)*ax+(1-(v^2)/(V^2))*ay-(v*w/(V^2))*az))];       
+	
+
+	pqr_ref_dot_ref = K_P_2*err_pqr+K_I_2*err_i_pqr+K_D_2*err_d_pqr;
+	
+	LMN_req = I*pqr_ref + cross([p;q;r],I*[p;q;r]);
+	
+	Cl_req = LMN_req(1)/(0.5*rho*(V^2)*S*b);
+	Cm_req = LMN_req(2)/(0.5*rho*(V^2)*S*cbar);
+	Cn_req = LMN_req(3)/(0.5*rho*(V^2)*S*b);
+	
+	
+	deflection = inv([Cl_dele Cl_dela Cl_delr;
+	                  Cm_dele Cm_dela Cm_delr;
+	                  Cn_dele Cn_dela Cn_delr])*([Cl_req;Cm_req;Cn_req]-[Cl;Cm;Cn]);
+	
+\end{verbatim}
 
 	\printbibliography
 	
