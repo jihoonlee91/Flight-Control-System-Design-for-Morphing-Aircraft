@@ -26,7 +26,7 @@
 \subtitle{Development of an SMPC Flap Module for Morphing Wings}
 \author{\textit{Author}\\Jihoon \textsc{Lee}\\Seungyun \textsc{Jung}\\Seong-hun \textsc{Kim}\\Hanna \textsc{Lee}}
 \supervisor{Yondan Kim}
-\context{with\\Ministry of Trade, Industry and Energy\\Korea Evaluation Institute of Industrial Technology\\Korea Aerospace University\\Chungnam National University\\Sejong University\\DBRAIN}
+\context{\small{with\\Ministry of Trade, Industry and Energy\\Korea Evaluation Institute of Industrial Technology\\Korea Aerospace University\\Chungnam National University\\Sejong University\\DBRAIN}\\~\\}
 \date{December 31, 2020}
 
 %%%%%%%%%%%%%%%%
@@ -133,32 +133,33 @@
 	정상 수평비행 상태에 대해 수치적 선형화를 수행하면 종방향과 횡방향 운동을 분리해서 다룰 수 있다.
 	종방향 상태변수 벡터와 제어입력 벡터는 다음과 같이 정의된다.
 	\begin{align}
-		x =& \begin{bmatrix}
-			\alpha && q && v_T && \theta
+		x_{lon} =& \begin{bmatrix}
+			\alpha && q && V_T && \theta
 		\end{bmatrix} \\
-		u =& \begin{bmatrix}
+		u_{lon} =& \begin{bmatrix}
 			\delta_e && \delta_t
 		\end{bmatrix}
 	\end{align}
 	종방향 운동은 다음과 같은 선형 방정식으로 나타낼 수 있다.
 	\begin{equation}
-		x=Ax+Bu
+		x=A_{lon} x_{lon}+B_{lon} u_{lon}
 	\end{equation}
 	이때 종방향 계수 행렬들은 수치적으로 얻어진다.
 	횡방향 상태변수 벡터와 제어입력 벡터는 다음과 같이 정의된다.
 	\begin{align}
-		x =& \begin{bmatrix}
-			\beta && \phi && p_s && r_s
+		x_{lat} =& \begin{bmatrix}
+			\beta && \phi && p && r
 		\end{bmatrix} \\
-		u =& \begin{bmatrix}
+		u_{lat} =& \begin{bmatrix}
 			\delta_a && \delta_r
 		\end{bmatrix}
 	\end{align}
 	횡방향 운동은 다음과 같은 선형 방정식으로 나타낼 수 있다.
 	\begin{equation}
-		x=Ax+Bu
+		x=A_{lat} x_{lat}+B_{lat} u_{lat}
 	\end{equation}
 	이때 횡방향 계수 행렬들은 수치적으로 얻어진다.	
+	
 	\chapter{Control Design}
 	
 	항공기의 수학적 모델링이 선행되면 도출한 수학적 모델을 기반으로 비행제어시스템을 설계할 수 있다.
@@ -354,6 +355,143 @@
 
 \subsection{Issues in Application to Morphing Aircraft}
 앞서 기술한 바와 같이 비선형 동적 모델역변환 제어기법은 일반적으로 비선형 시불변 시스템에 적용되어지는 제어방법론이다. 그렇기 때문에 특정 형상의 항공기에 대해 설계된 비선형 동적 모델역변환 제어기는 대규모로 형상이 변화한 항공기에 대해서는 안정성과 성능을 전혀 보장 할 수 없다. 그리고 모핑 항공기와 같은 비선형 시변 시스템에 비선형 동적 모델역변환 제어기법을 적용하기에는 제어기 설계의 복잡도가 매우 높아지는 어려움이 발생한다. 이러한 어려움은 성능 출력을 반복적으로 미분하는 과정 즉, Eq.~ \eqref{Eq:output_dere}을 계산하는 과정에서 다양한 시변 항들이 추가적으로 고려되어져야 한다는 사실로 부터 기인한다. 이 같은 어려움을 완화하기 위해서는 형상 변화에 따라 변하는 물리량들 중에서 변화량이 큰 물리량과 변화량이 작은 물리량을 구분하고 변화가 작은 물리량들은 적절한 상수 값으로 근사하여 시변항들을 최소화하고 이를 통해 설계 복잡도를 낮추는 것이 중요하다. 그러나 시변항들을 적절한 상수 값으로 근사화하더라도 상태공간 전체에서 만족스러운 제어 성능을 보장하는 비선형 동적 모델역변환 제어기를 설계하는 것은 여전히 복잡한 문제일 수 있다. 이를 해결하기위해서는 다양한 형태의 근사화된 비선형 동적 모델역변환 제어기법이 고려될 수 있을 것이다.
+
+
+\appendix
+
+\chapter{MATLAB Code - LQR}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ll}
+		\toprule
+		\textbf{Variable} & \textbf{Description} \\
+		\midrule
+		\verb+alpha+ & Angle of attack (rad)\\
+		\verb+q+ & Pitch rate (rad/s) \\
+		\verb+V_T+ & True airspeed (m/s) \\
+		\verb+theta+ & Pitch angle (rad) \\
+		\verb+beta+ & Sideslip angle (rad) \\
+		\verb+phi+ & Roll angle (rad) \\
+		\verb+p+ & Roll rate (rad/s) \\
+		\verb+r+ & Yaw rate (rad/s) \\
+		\verb+A_lon+ & 4$\times$4 longitudinal system matrix \\
+		\verb+B_lon+ & 4$\times$2 longitudinal input matrix \\
+		\verb+Q_lon+ & 4$\times$4 longitudinal state weighting matrix \\
+		\verb+R_lon+ & 2$\times$2 longitudinal input weighting matrix \\
+		\verb+A_lat+ & 4$\times$4 lateral system matrix \\
+		\verb+B_lat+ & 4$\times$2 lateral input matrix \\
+		\verb+Q_lat+ & 4$\times$4 lateral state weighting matrix \\
+		\verb+R_lat+ & 2$\times$2 lateral input weighting matrix \\
+		\bottomrule
+	\end{tabular}
+	\caption{List of the variables in LQR}
+	\label{tab:lqr_variables}
+\end{table}
+
+\pagebreak
+
+\FrameTBStyle{matlab}
+\begin{lstlisting}[style=matlabFrameTB, gobble=4]
+	% States
+	x_lon = [alpha q V_T theta];
+	x_lat = [beta phi p r];
+	
+	% Kalman gains
+	[K_lon,~,~] = LQR(A_lon(eta),B_lon(eta),Q_lon,R_lon,~);
+	[K_lat,~,~] = LQR(A_lat(eta),B_lat(eta),Q_lat,R_lat,~);
+		
+	% Optimal inputs
+	u_lon = -K_lon*x_lon;
+	u_lat = -K_lat*x_lat;
+	
+	% Control surface deflection commands
+	dele_c = u_lon(1);
+	delt_c = u_lon(2);
+	dela_c = u_lat(1);
+	delr_c = u_lat(2);
+\end{lstlisting}
+
+\chapter{MATLAB Code - NDI}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ll}
+		\toprule
+		\textbf{Variable} & \textbf{Description} \\
+		\midrule
+		\verb+phi_ref+ & Reference roll angle (rad) \\
+		\verb+theta_ref+ & Reference pitch angle (rad) \\
+		\verb+beta_ref+ & Reference sideslip angle (rad) \\
+		\verb+phi+ & Roll angle (rad) \\
+		\verb+theta+ & Pitch angle (rad) \\
+		\verb+beta+ & Sideslip angle (rad) \\
+		\verb+angle_err_int+ & Angle error integration (rad$\cdot$s) \\
+		\verb+angle_err_dot+ & Angle error derivative (rad/s) \\
+		\verb+K_P_i,K_I_i,K_D_i+ & 3$\times$3 PID gain matrices (i=1,2) \\
+		\verb+X,Y,Z+ & Body-axis forces (N) \\
+		\verb+m+ & Mass (kg) \\
+		\verb+g+ & Gravitational acceleration (m/s$^2$) \\
+		\verb+u,v,w+ & Body-axis velocity components (m/s) \\
+		\verb+V_T+ & True airspeed (m/s) \\
+		\verb+I+ & 3$\times$3 inertia matrix function (kg$\cdot$m$^2$) \\
+		\verb+eta+ & Morphing parameter \\
+		\verb+S+ & Planform area (m$^2$) \\
+		\verb+b+ & Span (m) \\
+		\verb+cbar+ & Mean aerodynamic chord (m) \\
+		\verb+Cl,Cm,Cn+ & Moment coefficient functions \\
+		\bottomrule
+	\end{tabular}
+	\caption{List of the variables in NDI}
+	\label{tab:ndi_variables}
+\end{table}
+
+\pagebreak
+
+\begin{lstlisting}[style=matlabFrameTB, gobble=4]
+	% Reference angle derivatives
+	angle_ref = [phi_ref;theta_ref;beta_ref];
+	angle = [phi;theta;beta];
+	angle_err = angle_ref-angle;
+	angle_err_dot = angle_ref_dot-angle_dot;
+	angle_ref_dot = K_P_1*angle_err+K_I_1*angle_err_int+K_D_1*angle_err_dot;
+	
+	% Body-axis accelerations
+	ax = X/m - g*sin(theta);
+	ay = Y/m + g*sin(phi)*cos(theta);
+	az = Z/m + g*cos(phi)*cos(theta);
+	
+	% Intermediate matrix
+	H = [1 sin(phi)*tan(theta) cos(phi)*tan(theta);
+	     0 cos(phi) -sin(phi);
+	     w/(sqrt(u^2+w^2)) 0 -u/(sqrt(u^2+w^2))];
+	
+	% Reference angular velocity       
+	pqr_ref = inv(H)*(angle_ref_dot-...
+	[0;0;(1/(sqrt(u^2+w^2)))*((-u*v/(V_T^2)*ax+...
+	(1-(v^2)/(V_T^2))*ay-(v*w/(V_T^2))*az))];
+	
+	% Reference angular velocity derivatives
+	pqr_ref_dot = K_P_2*pqr_err+K_I_2*pqr_err_int+K_D_2*pqr_err_dot;
+	
+	% Required moments
+	lmn_req = I(eta)*pqr_ref + cross(pqr,I(eta)*pqr);
+	
+	% Required moment coefficients
+	Cl_req = lmn_req(1)/(0.5*rho*(V_T^2)*S*b);
+	Cm_req = lmn_req(2)/(0.5*rho*(V_T^2)*S*cbar);
+	Cn_req = lmn_req(3)/(0.5*rho*(V_T^2)*S*b);
+	
+	% Required control surface deflections
+	del_req = inv([Cl_dela Cl_dele Cl_delr;Cm_dela Cm_dele Cm_delr;
+	               Cn_dela Cn_dele Cn_delr])*...
+	               ([Cl_req;Cm_req;Cn_req]-[Cl(eta);Cm(eta);Cn(eta)]);
+	               
+	% Control surface deflection commands
+    dele_c = del_req(1);
+    dela_c = del_req(2);
+    delr_c = del_req(3);
+\end{lstlisting}
 
 	\printbibliography
 	
